@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lato:wght@300;400&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #fdf6f9 0%, #f5eeff 50%, #fef6f0 100%); color: #3a2a3a; overflow-x: hidden; }
+  .page { display: none; min-height: 100vh; padding: 0; }
+  .page.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  #page1 { background: linear-gradient(160deg, #fff0f7 0%, #f3e8ff 60%, #fdecea 100%); text-align: center; padding: 60px 40px; position: relative; overflow: hidden; }
+  .floating-petals { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .petal { position: absolute; border-radius: 50% 0 50% 0; opacity: 0.3; animation: floatPetal linear infinite; }
+  @keyframes floatPetal { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 10% { opacity: 0.4; } 90% { opacity: 0.2; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+  #page1 .content { position: relative; z-index: 1; }
+  .cover-tag { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c084b0; margin-bottom: 24px; }
+  .cover-title { font-family: 'Playfair Display', serif; font-size: clamp(42px, 8vw, 72px); color: #7c3d7c; line-height: 1.1; margin-bottom: 16px; }
+  .cover-title span { font-style: italic; color: #a855a0; }
+  .cover-date { font-size: 13px; color: #b88ab0; letter-spacing: 2px; margin-bottom: 16px; }
+  .cover-divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 40px; }
+  .cover-divider-line { width: 48px; height: 0.5px; background: linear-gradient(to right, transparent, #d4637a); }
+  .cover-divider-line.r { background: linear-gradient(to left, transparent, #d4637a); }
+  .cover-heart { font-size: 14px; color: #c94060; }
+  .btn-start { display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #d8a4d0, #b88fc8); color: white; border: none; border-radius: 50px; font-size: 14px; letter-spacing: 1px; cursor: pointer; box-shadow: 0 8px 30px rgba(180,120,190,0.35); transition: all 0.3s ease; font-family: 'Lato', sans-serif; }
+  .btn-start:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(180,120,190,0.5); }
+  .hearts-deco { font-size: 18px; margin-top: 40px; letter-spacing: 10px; }
+
+  #page2 { background: #fffaf9; padding: 60px 40px; width: 100%; }
+  #page2 .content { max-width: 680px; width: 100%; }
+  .section-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #c084b0; margin-bottom: 12px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(28px, 5vw, 42px); color: #6b2f6b; margin-bottom: 40px; line-height: 1.2; }
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(to bottom, #e8c4e8, #d4637a55, #c4a8e0); }
+  .timeline-item { position: relative; margin-bottom: 36px; }
+  .timeline-dot { position: absolute; left: -24px; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: linear-gradient(135deg, #d8a4d0, #b890c8); border: 2px solid white; box-shadow: 0 0 0 2px #e8c4e8; }
+  .timeline-item.red-dot .timeline-dot { background: linear-gradient(135deg, #d4637a, #b84060); box-shadow: 0 0 0 2px #f0c0cc; }
+  .timeline-item.red-dot .timeline-date { color: #c04060; }
+  .timeline-date { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #c084b0; margin-bottom: 6px; }
+  .timeline-title { font-family: 'Playfair Display', serif; font-size: 18px; color: #6b2f6b; margin-bottom: 8px; }
+  .timeline-text { font-size: 14px; line-height: 1.8; color: #7a5a7a; font-weight: 300; }
+
+  #page3 { background: linear-gradient(160deg, #fdf0ff 0%, #fff5fb 100%); padding: 60px 40px; width: 100%; }
+  #page3 .content { max-width: 680px; width: 100%; }
+  .things-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 32px; }
+  .thing-card { background: white; border: 0.5px solid #e8d0e8; border-radius: 16px; padding: 16px 20px; display: flex; align-items: flex-start; gap: 14px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .thing-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(180,120,190,0.15); }
+  .thing-card.accent-red { border-left: 2px solid #e8909abb; }
+  .thing-num { font-family: 'Playfair Display', serif; font-size: 24px; color: #e0b8e0; font-style: italic; min-width: 32px; line-height: 1; margin-top: 2px; }
+  .thing-card.accent-red .thing-num { color: #d4637a; }
+  .thing-text { font-size: 14px; line-height: 1.6; color: #5a3a5a; font-weight: 300; }
+
+  #page4 { background: #2a1a2a; padding: 60px 40px; width: 100%; text-align: center; }
+  #page4 .content { max-width: 680px; width: 100%; }
+  .slideshow-frame { background: #1a0f1a; border-radius: 20px; padding: 40px; margin: 32px 0; border: 1px solid #4a2a4a; position: relative; overflow: hidden; min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .slideshow-frame::before { content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1.5px; background: linear-gradient(to right, transparent, #c04060aa, transparent); }
+  .slideshow-frame::after { content: ''; position: absolute; bottom: 0; left: 10%; right: 10%; height: 1.5px; background: linear-gradient(to right, transparent, #c04060aa, transparent); }
+  .slide { display: none; animation: fadeSlide 0.8s ease; }
+  .slide.active { display: block; }
+  @keyframes fadeSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .slide-icon { font-size: 28px; margin-bottom: 20px; letter-spacing: 10px; }
+  .slide-text { font-family: 'Playfair Display', serif; font-size: clamp(16px, 2.5vw, 22px); color: #f5e0f5; line-height: 1.7; font-style: italic; max-width: 520px; margin: 0 auto; }
+  .slide-sub { font-size: 12px; color: #c04060; margin-top: 16px; letter-spacing: 2px; text-transform: uppercase; }
+  .slide-controls { display: flex; align-items: center; gap: 16px; justify-content: center; margin-top: 24px; }
+  .slide-btn { width: 40px; height: 40px; border-radius: 50%; background: transparent; border: 1px solid #6a3a6a; color: #c090c0; font-size: 18px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .slide-btn:hover { background: #3a1a3a; border-color: #c04060; }
+  .slide-dots { display: flex; gap: 6px; }
+  .slide-dot { width: 6px; height: 6px; border-radius: 50%; background: #4a2a4a; transition: all 0.3s; cursor: pointer; }
+  .slide-dot.active { background: #c04060; width: 20px; border-radius: 3px; }
+  .dark-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #8a5a8a; margin-bottom: 12px; }
+  .dark-title { font-family: 'Playfair Display', serif; font-size: clamp(28px, 5vw, 40px); color: #f0d0f0; line-height: 1.2; }
+
+  /* TOMBOL NEXT YANG DIPERBAIKI — lebih visible */
+  .btn-next-dark {
+    display: inline-block; padding: 14px 40px;
+    background: linear-gradient(135deg, #7a2a4a, #5a1a3a);
+    color: #f0c0d0;
+    border: 1px solid #c04060;
+    border-radius: 50px; font-size: 13px; letter-spacing: 1.5px;
+    cursor: pointer; transition: all 0.3s ease;
+    font-family: 'Lato', sans-serif; margin-top: 32px;
+    box-shadow: 0 4px 20px rgba(192, 64, 96, 0.3);
+  }
+  .btn-next-dark:hover { background: linear-gradient(135deg, #9a3a5a, #7a2040); box-shadow: 0 8px 28px rgba(192,64,96,0.5); transform: translateY(-2px); }
+
+  #page5 { background: linear-gradient(160deg, #fff0f7 0%, #f3e8ff 60%, #fdecea 100%); padding: 60px 40px; width: 100%; text-align: center; }
+  #page5 .content { max-width: 560px; width: 100%; }
+  .gift-box { width: 120px; height: 120px; margin: 0 auto 32px; position: relative; cursor: pointer; transition: transform 0.3s ease; }
+  .gift-box:hover { transform: scale(1.05); }
+  .gift-box svg { width: 100%; height: 100%; }
+  .gift-msg { font-family: 'Playfair Display', serif; font-size: clamp(22px, 4vw, 36px); color: #6b2f6b; line-height: 1.3; margin-bottom: 20px; }
+  .gift-sub { font-size: 14px; color: #9a6a9a; line-height: 1.8; font-weight: 300; max-width: 400px; margin: 0 auto 32px; }
+  .gift-item { background: white; border: 0.5px solid #e0c0e0; border-radius: 16px; padding: 24px 28px; margin: 12px 0; text-align: left; display: flex; align-items: center; gap: 16px; }
+  .gift-item-icon { font-size: 28px; min-width: 36px; text-align: center; }
+  .gift-item-text { font-size: 14px; color: #5a3a5a; line-height: 1.7; font-weight: 300; }
+  .gift-item-title { font-family: 'Playfair Display', serif; font-size: 16px; color: #6b2f6b; margin-bottom: 4px; }
+  .gift-mystery { background: linear-gradient(135deg, #f3e8ff, #fdecea); border: 0.5px dashed #c090b8; border-radius: 16px; padding: 24px 28px; margin: 12px 0; text-align: center; cursor: pointer; transition: all 0.3s; }
+  .gift-mystery:hover { box-shadow: 0 6px 24px rgba(180,120,190,0.2); transform: translateY(-2px); }
+  .gift-mystery-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #c084b0; margin-bottom: 8px; }
+  .gift-mystery-text { font-family: 'Playfair Display', serif; font-size: 16px; color: #7c3d7c; font-style: italic; }
+
+  .nav-dots { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 100; }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(180,120,190,0.25); cursor: pointer; transition: all 0.3s; }
+  .nav-dot.active { background: #c04060; transform: scale(1.3); }
+  .btn-next { display: inline-block; padding: 12px 36px; background: linear-gradient(135deg, #d8a4d0, #b88fc8); color: white; border: none; border-radius: 50px; font-size: 13px; letter-spacing: 1px; cursor: pointer; box-shadow: 0 6px 24px rgba(180,120,190,0.3); transition: all 0.3s ease; font-family: 'Lato', sans-serif; margin-top: 32px; }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(180,120,190,0.45); }
+  .edit-note { display: inline-block; margin-top: 16px; padding: 10px 20px; background: rgba(180,120,190,0.08); border: 0.5px dashed #c090c0; border-radius: 10px; font-size: 12px; color: #b088b0; cursor: pointer; letter-spacing: 0.5px; }
+  .closing-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 16px; color: #9a6a9a; margin-top: 40px; line-height: 1.8; }
+  .closing-hearts { font-size: 18px; margin-top: 20px; letter-spacing: 10px; }
+
+  /* nama highlight */
+  .name-highlight { font-family: 'Playfair Display', serif; font-style: italic; color: #c04060; }
+</style>
+</head>
+<body>
+
+<div class="nav-dots" id="navDots">
+  <div class="nav-dot active" onclick="goTo(0)"></div>
+  <div class="nav-dot" onclick="goTo(1)"></div>
+  <div class="nav-dot" onclick="goTo(2)"></div>
+  <div class="nav-dot" onclick="goTo(3)"></div>
+  <div class="nav-dot" onclick="goTo(4)"></div>
+</div>
+
+<!-- PAGE 1: COVER -->
+<div class="page active" id="page1">
+  <div class="floating-petals" id="petals"></div>
+  <div class="content">
+    <p class="cover-tag">Sebuah perayaan untukmu</p>
+    <h1 class="cover-title">Selamat<br><span>Ulang Tahun,</span><br><span class="name-highlight" style="font-size: clamp(36px,6vw,58px);">Ara Nisa</span></h1>
+    <p class="cover-date">25 Mei &nbsp;·&nbsp; Hari yang paling berharga</p>
+    <div class="cover-divider">
+      <div class="cover-divider-line"></div>
+      <span class="cover-heart">♥</span>
+      <div class="cover-divider-line r"></div>
+    </div>
+    <button class="btn-start" onclick="goTo(1)">Buka pesan untukmu &rarr;</button>
+    <p class="hearts-deco">
+      <span style="color:#c04060;opacity:0.85;">♥</span>
+      <span style="color:#c090c0;opacity:0.5;font-size:14px;">♥</span>
+      <span style="color:#c04060;opacity:0.6;font-size:10px;">♥</span>
+    </p>
+  </div>
+</div>
+
+<!-- PAGE 2: STORY -->
+<div class="page" id="page2">
+  <div class="content">
+    <p class="section-label">Perjalanan kita</p>
+    <h2 class="section-title">Kisah yang<br>dimulai dari satu momen</h2>
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <p class="timeline-date">Sebelum segalanya</p>
+        <h3 class="timeline-title">Yang tidak pernah direncanakan</h3>
+        <p class="timeline-text">Tidak ada yang benar-benar tahu ini akan terjadi — bukan aku, bukan kamu. Masa-masa itu terasa canggung, penuh tanda tanya, kadang berat untuk dijangkau. Tapi ada sesuatu yang terus mengalir, pelan-pelan, tanpa aba-aba. Sampai akhirnya kami tidak perlu lagi bertanya ke mana arahnya.</p>
+      </div>
+
+      <div class="timeline-item red-dot">
+        <div class="timeline-dot"></div>
+        <p class="timeline-date">30 Oktober 2025</p>
+        <h3 class="timeline-title">Hari itu, segalanya berubah</h3>
+        <p class="timeline-text">Ada hari-hari yang kita tandai dalam hati — bukan karena ada yang istimewa di luarnya, tapi karena ada sesuatu yang diam-diam dimulai dari dalam. 30 Oktober adalah salah satunya.</p>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <p class="timeline-date">Hari-hari setelahnya</p>
+        <h3 class="timeline-title">Belajar mengenalmu</h3>
+        <p class="timeline-text">Setiap percakapan membuka satu pintu baru. Setiap cerita yang kamu bagi adalah bagian darimu yang perlahan aku pahami — dan setiap kali, aku selalu ingin tahu lebih.</p>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <p class="timeline-date">Sekarang</p>
+        <h3 class="timeline-title">Dan di sini kita berdiri</h3>
+        <p class="timeline-text">Belum lama, tapi sudah cukup dalam. Aku tidak tahu persis ke mana semua ini mengarah — tapi aku tahu bahwa bersamamu, <span class="name-highlight">Ara Nisa</span>, setiap langkah terasa seperti tempat yang ingin kutuju.</p>
+      </div>
+
+    </div>
+    <button class="btn-next" onclick="goTo(2)">Lanjutkan &rarr;</button>
+  </div>
+</div>
+
+<!-- PAGE 3: 25 THINGS -->
+<div class="page" id="page3">
+  <div class="content">
+    <p class="section-label">25 hal · untuk hari yang ke-25</p>
+    <h2 class="section-title">Hal-hal tentangmu<br>yang selalu aku ingat</h2>
+    <div class="things-grid" id="thingsGrid"></div>
+    <button class="btn-next" onclick="goTo(3)" style="margin-top:40px;">Lihat sesuatu untukmu &rarr;</button>
+    <br>
+    <span class="edit-note" onclick="sendPrompt('Tolong bantu saya edit daftar 25 hal di website ulang tahun ini dengan hal-hal yang lebih personal')">✏ Edit daftar ini dengan ceritamu sendiri ↗</span>
+  </div>
+</div>
+
+<!-- PAGE 4: SLIDESHOW -->
+<div class="page" id="page4">
+  <div class="content">
+    <p class="dark-label">Karena kamu layak dirayakan</p>
+    <h2 class="dark-title">Pesan dari hatiku</h2>
+    <div class="slideshow-frame">
+      <div class="slide active">
+        <div class="slide-icon"><span style="color:#c04060;">♥</span> <span style="color:#9a5a98;font-size:22px;">♥</span> <span style="color:#c04060;font-size:16px;">♥</span></div>
+        <p class="slide-text">"Di antara semua hal yang terjadi tahun ini, bertemu kamu adalah yang paling tidak kusangka — dan yang paling bersyukur kusambut."</p>
+        <p class="slide-sub">— untukmu, dengan sepenuh hati</p>
+      </div>
+      <div class="slide">
+        <div class="slide-icon"><span style="color:#9a5a98;font-size:16px;">♥</span> <span style="color:#c04060;">♥</span> <span style="color:#9a5a98;font-size:16px;">♥</span></div>
+        <p class="slide-text">"Kamu ceria, penuh semangat, dan punya mimpi yang besar. Tapi aku juga tahu — di balik itu semua, ada pikiran-pikiran yang kadang tidak mau diam. Dan aku ingin kamu tahu: aku ada, di saat yang tenang maupun yang ramai."</p>
+        <p class="slide-sub">— termasuk aku</p>
+      </div>
+      <div class="slide">
+        <div class="slide-icon"><span style="color:#c04060;font-size:16px;">♥</span> <span style="color:#c04060;">♥</span> <span style="color:#c04060;font-size:16px;">♥</span></div>
+        <p class="slide-text">"Semoga tahun ini membawa hal-hal yang selama ini kamu impikan. Dan semoga di antara semua itu, ada aku — menemanimu."</p>
+        <p class="slide-sub">— selamat ulang tahun, <span style="font-style:normal; color:#f0a0b8;">Ara Nisa</span></p>
+      </div>
+      <div class="slide">
+        <div class="slide-icon"><span style="color:#9a5a98;font-size:22px;">♥</span> <span style="color:#c04060;font-size:14px;">♥</span> <span style="color:#9a5a98;">♥</span></div>
+        <p class="slide-text">"Terima kasih sudah hadir. Terima kasih sudah mau dikenal. Terima kasih sudah menjadi kamu."</p>
+        <p class="slide-sub">— dengan cinta yang tulus</p>
+      </div>
+    </div>
+    <div class="slide-controls">
+      <button class="slide-btn" onclick="changeSlide(-1)">&#8592;</button>
+      <div class="slide-dots" id="slideDots">
+        <div class="slide-dot active" onclick="goSlide(0)"></div>
+        <div class="slide-dot" onclick="goSlide(1)"></div>
+        <div class="slide-dot" onclick="goSlide(2)"></div>
+        <div class="slide-dot" onclick="goSlide(3)"></div>
+      </div>
+      <button class="slide-btn" onclick="changeSlide(1)">&#8594;</button>
+    </div>
+    <br>
+    <button class="btn-next-dark" onclick="goTo(4)">Dan ada satu lagi untukmu &rarr;</button>
+    <br>
+    <span class="edit-note" style="border-color:#6a3a6a;color:#8a5a8a;background:rgba(100,40,100,0.08);" onclick="sendPrompt('Tolong bantu saya edit pesan-pesan slideshow di website ulang tahun ini agar lebih personal')">✏ Edit pesan slideshow ini ↗</span>
+  </div>
+</div>
+
+<!-- PAGE 5: GIFT REVEAL -->
+<div class="page" id="page5">
+  <div class="content">
+    <p class="section-label">Dan akhirnya...</p>
+    <div class="gift-box" onclick="revealGift()">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <rect x="15" y="50" width="90" height="60" rx="8" fill="#e8c4e0" stroke="#c090b8" stroke-width="1"/>
+        <rect x="15" y="40" width="90" height="18" rx="4" fill="#d0a8cc" stroke="#b888c0" stroke-width="1"/>
+        <rect x="52" y="40" width="16" height="70" rx="4" fill="#c084b8"/>
+        <ellipse cx="60" cy="40" rx="20" ry="10" fill="none" stroke="#c04060" stroke-width="1.5"/>
+        <ellipse cx="60" cy="40" rx="20" ry="10" fill="none" stroke="#c04060" stroke-width="1.5" transform="rotate(60 60 40)"/>
+        <ellipse cx="60" cy="40" rx="20" ry="10" fill="none" stroke="#c04060" stroke-width="1.5" transform="rotate(120 60 40)"/>
+        <text x="60" y="88" text-anchor="middle" font-size="22" fill="#c04060">♥</text>
+      </svg>
+    </div>
+
+    <h2 class="gift-msg">Ada yang sudah<br>menunggumu, <span class="name-highlight" style="font-size:clamp(18px,3vw,28px);">Ara Nisa</span></h2>
+    <p class="gift-sub">Bukan sekadar benda — ini sesuatu yang kupilih karena aku mendengar, aku memperhatikan, dan aku peduli.</p>
+
+    <div id="giftArea">
+      <div class="gift-item">
+        <div class="gift-item-icon">⌚</div>
+        <div>
+          <p class="gift-item-title">Jam tangan</p>
+          <p class="gift-item-text">Kamu pernah menyebutkannya, dan aku ingat. Semoga setiap kali kamu melihat waktu, kamu juga ingat bahwa ada seseorang yang selalu menghitung momen bersamamu.</p>
+        </div>
+      </div>
+
+      <div class="gift-mystery" onclick="revealMystery()">
+        <p class="gift-mystery-label">✦ &nbsp; Kejutan kecil &nbsp; ✦</p>
+        <p class="gift-mystery-text">Dan satu lagi yang belum boleh kuceritakan dulu — ketuk untuk membuka</p>
+      </div>
+    </div>
+
+    <p class="closing-quote">"Selamat ulang tahun yang ke-25.<br>Semoga ini menjadi salah satu tahun yang paling indah untukmu."</p>
+    <p class="closing-hearts">
+      <span style="color:#c04060;">♥</span>
+      <span style="color:#c090c0;font-size:14px;">♥</span>
+      <span style="color:#c04060;font-size:10px;">♥</span>
+    </p>
+  </div>
+</div>
+
+<script>
+  let currentPage = 0;
+  const pages = document.querySelectorAll('.page');
+  const navDots = document.querySelectorAll('.nav-dot');
+  function goTo(idx) {
+    pages[currentPage].classList.remove('active');
+    navDots[currentPage].classList.remove('active');
+    currentPage = idx;
+    pages[currentPage].classList.add('active');
+    navDots[currentPage].classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  const things = [
+    { n:1,  t:"Cara matamu berbicara sebelum kata-katamu sempat keluar" },
+    { n:2,  t:"Senyummu yang muncul tiba-tiba, bahkan di tengah hal yang biasa saja" },
+    { n:3,  t:"Semangatmu yang tidak pernah setengah-setengah untuk hal yang kamu cintai" },
+    { n:4,  t:"Matamu yang menangkap detail kecil yang orang lain tidak sempat lihat" },
+    { n:5,  t:"Kejujuranmu — bahkan di saat jujur itu tidak mudah dan tidak nyaman" },
+    { n:6,  t:"Kehangatan yang kamu bawa, tanpa kamu sadari, di setiap percakapan" },
+    { n:7,  t:"Cara matamu bersinar saat bercerita tentang hal-hal yang kamu suka" },
+    { n:8,  t:"Suaramu saat kamu bernyanyi — ada ketulusan di sana yang tidak bisa dipalsukan" },
+    { n:9,  t:"Cara kamu mendengarkan — bukan hanya diam, tapi benar-benar hadir" },
+    { n:10, t:"Kepedulianmu yang tidak selalu kamu ucapkan, tapi selalu terasa di sela-selanya" },
+    { n:11, t:"Kamu tahu cara membuat hal yang biasa terasa sedikit lebih bermakna" },
+    { n:12, t:"Antusiasme kecilmu saat menemukan sesuatu yang menarik perhatianmu" },
+    { n:13, t:"Kamu ingat hal-hal kecil yang kamu kira tidak ada yang perhatikan" },
+    { n:14, t:"Caramu menghadapi hari yang berat tanpa kehilangan dirimu" },
+    { n:15, t:"Kekuatanmu yang tidak bising — hadir diam-diam, tapi nyata terasa" },
+    { n:16, t:"Kamu tidak pernah membuatku merasa kecil, bahkan di saat aku tidak yakin dengan diriku sendiri" },
+    { n:17, t:"Kamu punya mimpi besar — dan aku suka melihat betapa seriusnya kamu mengejarnya" },
+    { n:18, t:"Kelembutanmu yang ada di balik ceriamu — dua sisi yang membuat kamu utuh" },
+    { n:19, t:"Dunia terasa sedikit lebih ringan hanya karena kamu ada di dalamnya" },
+    { n:20, t:"Humormu yang muncul di waktu yang tepat, tanpa perlu dipaksakan" },
+    { n:21, t:"Cara kamu menerima orang apa adanya, tanpa syarat yang rumit" },
+    { n:22, t:"Tekadmu yang pelan tapi pasti — diam-diam kamu selalu bergerak maju" },
+    { n:23, t:"Kamu tidak perlu banyak kata untuk membuat seseorang merasa dimengerti" },
+    { n:24, t:"Cara kamu tumbuh — setiap harinya, sedikit demi sedikit, dengan caramu sendiri" },
+    { n:25, t:"Dan yang terakhir: kamu adalah kamu. Dan itu sudah lebih dari cukup." }
+  ];
+
+  const kept = new Set([1,4,5,6,7,9,10,11,16,17,18,19,24,25]);
+  const grid = document.getElementById('thingsGrid');
+  things.forEach((item, i) => {
+    const card = document.createElement('div');
+    const isAccent = (i+1) % 5 === 0;
+    card.className = 'thing-card' + (isAccent ? ' accent-red' : '');
+    card.innerHTML = `<span class="thing-num">${item.n}</span><p class="thing-text">${item.t}</p>`;
+    grid.appendChild(card);
+  });
+
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.slide-dot');
+  function goSlide(idx) {
+    slides[currentSlide].classList.remove('active');
+    dots[currentSlide].classList.remove('active');
+    currentSlide = idx;
+    slides[currentSlide].classList.add('active');
+    dots[currentSlide].classList.add('active');
+  }
+  function changeSlide(dir) { goSlide((currentSlide + dir + slides.length) % slides.length); }
+
+  let mysteryOpened = false;
+  function revealMystery() {
+    if (mysteryOpened) return;
+    mysteryOpened = true;
+    const el = document.querySelector('.gift-mystery');
+    el.style.transition = 'all 0.4s ease';
+    el.style.transform = 'scale(0.97)';
+    setTimeout(() => {
+      el.innerHTML = `
+        <p style="font-size:24px;margin-bottom:12px;color:#c04060;">♥</p>
+        <p style="font-family:'Playfair Display',serif;font-size:16px;color:#6b2f6b;font-style:italic;line-height:1.7;">
+          [Isi di sini hadiahnya — dan tuliskan mengapa kamu memilih ini untuknya]
+        </p>`;
+      el.style.transform = 'scale(1)';
+    }, 300);
+  }
+
+  const petalColors = ['#f9c8e0','#e8c4f0','#f5c8d0','#d8c4f0','#f8d8e8','#f0c0cc'];
+  const petalEl = document.getElementById('petals');
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.top = Math.random() * 100 + '%';
+    p.style.background = petalColors[Math.floor(Math.random() * petalColors.length)];
+    p.style.animationDuration = (6 + Math.random() * 8) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    const size = (8 + Math.random() * 10) + 'px';
+    p.style.width = size; p.style.height = size;
+    petalEl.appendChild(p);
+  }
+</script>
+</body>
+</html>
