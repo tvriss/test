@@ -4,130 +4,151 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lato:wght@300;400&display=swap');
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Lato',sans-serif;color:#3a2a3a;overflow-x:hidden;}
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Lato:wght@300;400&family=Dancing+Script:wght@500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Lato',sans-serif;color:#3a2a3a;overflow-x:hidden;background:#fff0f7;}
 
-  /* petals global */
-  .petal-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden;}
-  .petal{position:absolute;pointer-events:none;animation:floatPetal linear infinite;opacity:0;}
-  @keyframes floatPetal{0%{transform:translateY(-40px) rotate(0deg) scale(1);opacity:0;}8%{opacity:0.7;}85%{opacity:0.4;}100%{transform:translateY(105vh) rotate(400deg) scale(0.7);opacity:0;}}
+/* ── PETAL CANVAS ── */
+#petalCanvas{position:fixed;inset:0;pointer-events:none;z-index:998;overflow:hidden;}
+.petal{position:absolute;pointer-events:none;animation:floatP linear forwards;opacity:0;}
+@keyframes floatP{0%{transform:translateY(-30px) rotate(0deg);opacity:0;}8%{opacity:.65;}88%{opacity:.35;}100%{transform:translateY(108vh) rotate(380deg);opacity:0;}}
 
-  /* flower corner decorations */
-  .flower-corner{position:absolute;pointer-events:none;opacity:0.18;}
+/* ── NAV ── */
+.nav-dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:1000;}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(180,120,190,.25);cursor:pointer;transition:all .3s;}
+.nav-dot.active{background:#c04060;transform:scale(1.3);}
 
-  .page{display:none;min-height:100vh;width:100%;position:relative;overflow:hidden;}
-  .page.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
-  .page-inner{position:relative;z-index:2;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px;}
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;width:100%;position:relative;overflow:hidden;}
+.page.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
 
-  /* bg patterns */
-  .page-bg{position:absolute;inset:0;z-index:0;}
+/* ── WATERCOLOR FLORAL SVG corners ── */
+.floral{position:absolute;pointer-events:none;}
 
-  /* PAGE 1 */
-  #page1{background:linear-gradient(160deg,#fff0f7 0%,#f3e8ff 60%,#fdecea 100%);}
-  #page1 .page-bg{background-image:radial-gradient(circle,#d4a0c840 1.5px,transparent 1.5px);background-size:28px 28px;}
+/* ── BG DOT PATTERN ── */
+.dot-bg{position:absolute;inset:0;background-image:radial-gradient(circle,currentColor 1.2px,transparent 1.2px);background-size:26px 26px;opacity:.07;}
 
-  /* PAGE 2 */
-  #page2{background:#fffaf9;}
-  #page2 .page-bg{background-image:radial-gradient(circle,#e8c4e820 1.5px,transparent 1.5px);background-size:24px 24px;}
+/* ════════════════════════════════
+   PAGE 0 — ENVELOPE / COVER
+════════════════════════════════ */
+#page0{background:linear-gradient(160deg,#fdf0f7 0%,#f0e4ff 55%,#fdecea 100%);}
+#page0 .dot-bg{color:#c084b0;}
 
-  /* PAGE 3 */
-  #page3{background:linear-gradient(160deg,#fdf0ff 0%,#fff5fb 100%);}
-  #page3 .page-bg{background-image:radial-gradient(circle,#c090b820 1.5px,transparent 1.5px);background-size:26px 26px;}
+.envelope-wrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:40px 24px;}
+.env-hint{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c084b0;margin-bottom:28px;animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:.5;}50%{opacity:1;}}
 
-  /* PAGE 4 */
-  #page4{background:#2a1a2a;}
-  #page4 .page-bg{background-image:radial-gradient(circle,#6a2a6a25 1.5px,transparent 1.5px);background-size:22px 22px;}
+/* envelope body */
+.envelope{width:min(380px,90vw);position:relative;cursor:pointer;filter:drop-shadow(0 16px 40px rgba(160,80,140,.18));}
+.env-body{width:100%;aspect-ratio:1.414/1;background:linear-gradient(145deg,#fce8f4,#f0d8f0);border-radius:6px 6px 10px 10px;border:1px solid #d8b0d0;position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:24px;transition:transform .4s ease;}
+.envelope:hover .env-body{transform:translateY(-4px);}
 
-  /* PAGE 5 */
-  #page5{background:linear-gradient(160deg,#fff0f7 0%,#f3e8ff 60%,#fdecea 100%);}
-  #page5 .page-bg{background-image:radial-gradient(circle,#d4a0c840 1.5px,transparent 1.5px);background-size:28px 28px;}
+/* flap */
+.env-flap{position:absolute;top:0;left:0;width:100%;height:50%;clip-path:polygon(0 0,100% 0,50% 100%);background:linear-gradient(160deg,#f0d0ec,#e4c0e4);border-radius:6px 6px 0 0;border:1px solid #d0a8cc;transform-origin:top center;transition:transform .6s cubic-bezier(.4,0,.2,1);z-index:2;}
+.envelope.open .env-flap{transform:rotateX(180deg);}
 
-  /* typography */
-  .cover-tag{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c084b0;margin-bottom:24px;}
-  .cover-title{font-family:'Playfair Display',serif;font-size:clamp(42px,8vw,72px);color:#7c3d7c;line-height:1.1;margin-bottom:16px;text-align:center;}
-  .cover-title span{font-style:italic;color:#a855a0;}
-  .cover-date{font-size:13px;color:#b88ab0;letter-spacing:2px;margin-bottom:16px;text-align:center;}
-  .cover-divider{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:40px;}
-  .cover-divider-line{width:48px;height:0.5px;background:linear-gradient(to right,transparent,#d4637a);}
-  .cover-divider-line.r{background:linear-gradient(to left,transparent,#d4637a);}
-  .cover-heart{font-size:14px;color:#c94060;}
-  .btn-start{display:inline-block;padding:14px 40px;background:linear-gradient(135deg,#d8a4d0,#b88fc8);color:white;border:none;border-radius:50px;font-size:14px;letter-spacing:1px;cursor:pointer;box-shadow:0 8px 30px rgba(180,120,190,0.35);transition:all 0.3s ease;font-family:'Lato',sans-serif;}
-  .btn-start:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(180,120,190,0.5);}
-  .hearts-deco{font-size:18px;margin-top:40px;letter-spacing:10px;text-align:center;}
-  .section-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c084b0;margin-bottom:12px;}
-  .section-title{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,42px);color:#6b2f6b;margin-bottom:40px;line-height:1.2;}
-  .name-highlight{font-family:'Playfair Display',serif;font-style:italic;color:#c04060;}
+/* left & right triangles */
+.env-left{position:absolute;bottom:0;left:0;width:50%;height:100%;clip-path:polygon(0 0,0 100%,100% 100%);background:linear-gradient(135deg,#eed8f0,#e0c8e8);border-radius:0 0 0 10px;}
+.env-right{position:absolute;bottom:0;right:0;width:50%;height:100%;clip-path:polygon(100% 0,0 100%,100% 100%);background:linear-gradient(225deg,#eed8f0,#e0c8e8);border-radius:0 0 10px 0;}
+.env-bottom{position:absolute;bottom:0;left:0;width:100%;height:50%;clip-path:polygon(0 100%,100% 100%,50% 0);background:linear-gradient(170deg,#f8e8f8,#ecd8ee);z-index:1;}
 
-  /* timeline */
-  .timeline{position:relative;padding-left:28px;max-width:640px;width:100%;}
-  .timeline::before{content:'';position:absolute;left:7px;top:8px;bottom:8px;width:1px;background:linear-gradient(to bottom,#e8c4e8,#d4637a55,#c4a8e0);}
-  .timeline-item{position:relative;margin-bottom:36px;}
-  .timeline-dot{position:absolute;left:-24px;top:6px;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#d8a4d0,#b890c8);border:2px solid white;box-shadow:0 0 0 2px #e8c4e8;}
-  .timeline-item.red-dot .timeline-dot{background:linear-gradient(135deg,#d4637a,#b84060);box-shadow:0 0 0 2px #f0c0cc;}
-  .timeline-item.red-dot .timeline-date{color:#c04060;}
-  .timeline-date{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#c084b0;margin-bottom:6px;}
-  .timeline-title{font-family:'Playfair Display',serif;font-size:18px;color:#6b2f6b;margin-bottom:8px;}
-  .timeline-text{font-size:14px;line-height:1.8;color:#7a5a7a;font-weight:300;}
+/* seal */
+.seal{width:72px;height:72px;border-radius:50%;background:radial-gradient(circle at 38% 38%,#d4607a,#9a2848);border:3px solid #c04060;box-shadow:0 4px 16px rgba(160,40,72,.35),inset 0 1px 3px rgba(255,200,200,.3);display:flex;align-items:center;justify-content:center;position:relative;z-index:3;flex-shrink:0;transition:transform .2s,box-shadow .2s;}
+.seal:hover{transform:scale(1.06);box-shadow:0 6px 22px rgba(160,40,72,.5),inset 0 1px 3px rgba(255,200,200,.3);}
+.seal-inner{font-family:'Dancing Script',cursive;font-size:22px;color:#ffe0e8;text-align:center;line-height:1;user-select:none;}
+.seal-ring{position:absolute;inset:4px;border-radius:50%;border:1px solid rgba(255,180,190,.4);}
 
-  /* 25 things */
-  .things-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:32px;width:100%;}
-  .thing-card{background:white;border:0.5px solid #e8d0e8;border-radius:16px;padding:14px 18px;display:flex;align-items:flex-start;gap:12px;transition:transform 0.2s,box-shadow 0.2s;}
-  .thing-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(180,120,190,0.15);}
-  .thing-card.accent-red{border-left:2px solid #e8909abb;}
-  .thing-num{font-family:'Playfair Display',serif;font-size:22px;color:#e0b8e0;font-style:italic;min-width:28px;line-height:1;margin-top:2px;}
-  .thing-card.accent-red .thing-num{color:#d4637a;}
-  .thing-text{font-size:13px;line-height:1.6;color:#5a3a5a;font-weight:300;}
+/* letter sheet */
+.letter-sheet{position:absolute;bottom:0;left:50%;transform:translateX(-50%) translateY(0);width:92%;height:95%;background:linear-gradient(170deg,#fffaf9,#fff5fb);border-radius:4px;border:0.5px solid #e8d0e8;z-index:0;transition:transform .7s cubic-bezier(.4,0,.2,1) .1s,opacity .5s;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;opacity:0;}
+.letter-sheet.peeking{opacity:1;}
+.envelope.open .letter-sheet{transform:translateX(-50%) translateY(-110%);opacity:1;}
 
-  /* slideshow */
-  .slideshow-frame{background:#1a0f1a;border-radius:20px;padding:40px;margin:32px 0;border:1px solid #4a2a4a;position:relative;overflow:hidden;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;}
-  .slideshow-frame::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1.5px;background:linear-gradient(to right,transparent,#c04060aa,transparent);}
-  .slideshow-frame::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:1.5px;background:linear-gradient(to right,transparent,#c04060aa,transparent);}
-  .slide{display:none;animation:fadeSlide 0.8s ease;}
-  .slide.active{display:block;}
-  @keyframes fadeSlide{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-  .slide-icon{font-size:26px;margin-bottom:18px;letter-spacing:10px;text-align:center;}
-  .slide-text{font-family:'Playfair Display',serif;font-size:clamp(15px,2.2vw,20px);color:#f5e0f5;line-height:1.8;font-style:italic;max-width:500px;margin:0 auto;text-align:center;}
-  .slide-sub{font-size:11px;color:#c04060;margin-top:14px;letter-spacing:2px;text-transform:uppercase;text-align:center;}
-  .slide-controls{display:flex;align-items:center;gap:16px;justify-content:center;margin-top:20px;}
-  .slide-btn{width:38px;height:38px;border-radius:50%;background:transparent;border:1px solid #6a3a6a;color:#c090c0;font-size:16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
-  .slide-btn:hover{background:#3a1a3a;border-color:#c04060;}
-  .slide-dots{display:flex;gap:6px;}
-  .slide-dot{width:6px;height:6px;border-radius:50%;background:#4a2a4a;transition:all 0.3s;cursor:pointer;}
-  .slide-dot.active{background:#c04060;width:20px;border-radius:3px;}
-  .dark-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#8a5a8a;margin-bottom:12px;}
-  .dark-title{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,40px);color:#f0d0f0;line-height:1.2;text-align:center;}
-  .btn-next-dark{display:inline-block;padding:14px 40px;background:linear-gradient(135deg,#7a2a4a,#5a1a3a);color:#f0c0d0;border:1px solid #c04060;border-radius:50px;font-size:13px;letter-spacing:1.5px;cursor:pointer;transition:all 0.3s ease;font-family:'Lato',sans-serif;margin-top:32px;box-shadow:0 4px 20px rgba(192,64,96,0.3);}
-  .btn-next-dark:hover{background:linear-gradient(135deg,#9a3a5a,#7a2040);box-shadow:0 8px 28px rgba(192,64,96,0.5);transform:translateY(-2px);}
+/* ════════════════════════════════
+   PAGES 1–4  shared
+════════════════════════════════ */
+.page-inner{position:relative;z-index:2;width:100%;max-width:780px;margin:0 auto;padding:52px 32px;}
 
-  /* page 5 — gift & prayer */
-  .gift-box-wrap{width:100px;height:100px;margin:0 auto 28px;cursor:default;}
-  .gift-box-wrap svg{width:100%;height:100%;}
-  .gift-msg{font-family:'Playfair Display',serif;font-size:clamp(22px,4vw,34px);color:#6b2f6b;line-height:1.3;margin-bottom:16px;text-align:center;}
-  .gift-intro{font-size:14px;color:#9a6a9a;line-height:1.8;font-weight:300;max-width:440px;margin:0 auto 36px;text-align:center;}
-  .prayer-card{background:white;border:0.5px solid #e0c8e8;border-radius:20px;padding:32px 36px;max-width:560px;width:100%;position:relative;overflow:hidden;}
-  .prayer-card::before{content:'✦';position:absolute;top:16px;left:20px;font-size:14px;color:#e0b8e0;}
-  .prayer-card::after{content:'✦';position:absolute;bottom:16px;right:20px;font-size:14px;color:#e0b8e0;}
-  .prayer-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#c084b0;margin-bottom:20px;text-align:center;}
-  .prayer-text{font-family:'Playfair Display',serif;font-size:15px;color:#5a3060;line-height:2;font-style:italic;text-align:center;}
-  .prayer-text strong{font-style:normal;color:#c04060;font-weight:500;}
-  .prayer-divider{width:40px;height:0.5px;background:linear-gradient(to right,transparent,#c084b0,transparent);margin:20px auto;}
-  .prayer-sign{font-size:12px;color:#b088b0;text-align:center;letter-spacing:1px;}
+/* photo placeholder */
+.photo-slot{border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#f0e0f0,#e8d0f8);border:1.5px dashed #c090c0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all .25s;}
+.photo-slot:hover{border-color:#c04060;box-shadow:0 6px 24px rgba(180,90,140,.15);}
+.photo-slot input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.photo-slot img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:14px;}
+.photo-icon{font-size:28px;color:#c090c0;margin-bottom:8px;}
+.photo-label{font-size:11px;color:#c090c0;letter-spacing:1px;text-transform:uppercase;}
 
-  .nav-dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:1000;}
-  .nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(180,120,190,0.25);cursor:pointer;transition:all 0.3s;}
-  .nav-dot.active{background:#c04060;transform:scale(1.3);}
-  .btn-next{display:inline-block;padding:12px 36px;background:linear-gradient(135deg,#d8a4d0,#b88fc8);color:white;border:none;border-radius:50px;font-size:13px;letter-spacing:1px;cursor:pointer;box-shadow:0 6px 24px rgba(180,120,190,0.3);transition:all 0.3s ease;font-family:'Lato',sans-serif;margin-top:32px;}
-  .btn-next:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(180,120,190,0.45);}
-  .edit-note{display:inline-block;margin-top:16px;padding:10px 20px;background:rgba(180,120,190,0.08);border:0.5px dashed #c090c0;border-radius:10px;font-size:12px;color:#b088b0;cursor:pointer;letter-spacing:0.5px;}
+/* typography */
+.sec-tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#c084b0;margin-bottom:10px;}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(26px,4.5vw,40px);color:#6b2f6b;line-height:1.2;margin-bottom:28px;}
+.name-hl{font-family:'Playfair Display',serif;font-style:italic;color:#c04060;}
+.body-text{font-size:14px;line-height:1.85;color:#7a5a7a;font-weight:300;}
 
-  .closing-hearts{font-size:18px;margin-top:28px;letter-spacing:10px;text-align:center;}
+/* timeline */
+.timeline{position:relative;padding-left:26px;}
+.timeline::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:linear-gradient(to bottom,#e8c4e8,#d4637a55,#c4a8e0);}
+.t-item{position:relative;margin-bottom:30px;}
+.t-dot{position:absolute;left:-22px;top:5px;width:13px;height:13px;border-radius:50%;background:linear-gradient(135deg,#d8a4d0,#b890c8);border:2px solid white;box-shadow:0 0 0 2px #e8c4e8;}
+.t-item.rd .t-dot{background:linear-gradient(135deg,#d4637a,#b84060);box-shadow:0 0 0 2px #f0c0cc;}
+.t-item.rd .t-date{color:#c04060;}
+.t-date{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#c084b0;margin-bottom:4px;}
+.t-title{font-family:'Playfair Display',serif;font-size:17px;color:#6b2f6b;margin-bottom:6px;}
+
+/* 25 things */
+.things-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:24px;}
+.tc{background:white;border:0.5px solid #e8d0e8;border-radius:14px;padding:13px 16px;display:flex;align-items:flex-start;gap:11px;transition:transform .2s,box-shadow .2s;}
+.tc:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(180,100,160,.12);}
+.tc.ar{border-left:2px solid #e8909a99;}
+.tn{font-family:'Playfair Display',serif;font-size:20px;color:#e0b8e0;font-style:italic;min-width:26px;line-height:1;margin-top:2px;}
+.tc.ar .tn{color:#d4637a;}
+.tt{font-size:13px;line-height:1.55;color:#5a3a5a;font-weight:300;}
+
+/* slideshow */
+.sf{background:#1a0f1a;border-radius:18px;padding:36px;margin:28px 0;border:1px solid #4a2a4a;position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.sf::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1.5px;background:linear-gradient(to right,transparent,#c04060aa,transparent);}
+.sf::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:1.5px;background:linear-gradient(to right,transparent,#c04060aa,transparent);}
+.sl{display:none;animation:fadeS .8s ease;}
+.sl.active{display:block;}
+@keyframes fadeS{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.si{font-size:24px;margin-bottom:16px;letter-spacing:10px;text-align:center;}
+.st{font-family:'Playfair Display',serif;font-size:clamp(15px,2.2vw,20px);color:#f5e0f5;line-height:1.8;font-style:italic;max-width:480px;margin:0 auto;text-align:center;}
+.ss{font-size:11px;color:#c04060;margin-top:12px;letter-spacing:2px;text-transform:uppercase;text-align:center;}
+.sc{display:flex;align-items:center;gap:14px;justify-content:center;margin-top:18px;}
+.sb{width:36px;height:36px;border-radius:50%;background:transparent;border:1px solid #6a3a6a;color:#c090c0;font-size:15px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.sb:hover{background:#3a1a3a;border-color:#c04060;}
+.sd-wrap{display:flex;gap:6px;}
+.sd{width:6px;height:6px;border-radius:50%;background:#4a2a4a;transition:all .3s;cursor:pointer;}
+.sd.active{background:#c04060;width:18px;border-radius:3px;}
+
+/* prayer card */
+.prayer-card{background:white;border:0.5px solid #e0c8e8;border-radius:18px;padding:28px 32px;max-width:560px;width:100%;position:relative;overflow:hidden;margin:0 auto;}
+.prayer-card::before{content:'✦';position:absolute;top:14px;left:18px;font-size:13px;color:#e0b8e0;}
+.prayer-card::after{content:'✦';position:absolute;bottom:14px;right:18px;font-size:13px;color:#e0b8e0;}
+.pl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#c084b0;margin-bottom:18px;text-align:center;}
+.pt{font-family:'Playfair Display',serif;font-size:14.5px;color:#5a3060;line-height:2.1;font-style:italic;text-align:center;}
+.pt strong{font-style:normal;color:#c04060;font-weight:500;}
+.pdiv{width:36px;height:.5px;background:linear-gradient(to right,transparent,#c084b0,transparent);margin:18px auto;}
+.psign{font-size:12px;color:#b088b0;text-align:center;letter-spacing:1px;}
+
+/* buttons */
+.btn-p{display:inline-block;padding:12px 34px;background:linear-gradient(135deg,#d8a4d0,#b88fc8);color:white;border:none;border-radius:50px;font-size:13px;letter-spacing:1px;cursor:pointer;box-shadow:0 6px 22px rgba(180,120,190,.3);transition:all .3s;font-family:'Lato',sans-serif;margin-top:28px;}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(180,120,190,.45);}
+.btn-d{display:inline-block;padding:13px 38px;background:linear-gradient(135deg,#7a2a4a,#5a1a3a);color:#f0c0d0;border:1px solid #c04060;border-radius:50px;font-size:13px;letter-spacing:1.5px;cursor:pointer;transition:all .3s;font-family:'Lato',sans-serif;margin-top:28px;box-shadow:0 4px 18px rgba(192,64,96,.28);}
+.btn-d:hover{background:linear-gradient(135deg,#9a3a5a,#7a2040);box-shadow:0 8px 26px rgba(192,64,96,.48);transform:translateY(-2px);}
+.edit-note{display:inline-block;margin-top:14px;padding:9px 18px;background:rgba(180,120,190,.07);border:.5px dashed #c090c0;border-radius:9px;font-size:11px;color:#b088b0;cursor:pointer;letter-spacing:.5px;}
+
+/* ── PAGE-SPECIFIC BG ── */
+#page1{background:#fffaf9;}
+#page1 .dot-bg{color:#e8c4e8;}
+#page2{background:linear-gradient(160deg,#fdf0ff 0%,#fff5fb 100%);}
+#page2 .dot-bg{color:#c090b8;}
+#page3{background:#2a1a2a;}
+#page3 .dot-bg{color:#6a2a6a;}
+#page4{background:linear-gradient(160deg,#fff0f7 0%,#f3e8ff 60%,#fdecea 100%);}
+#page4 .dot-bg{color:#d0a0c8;}
 </style>
 </head>
 <body>
 
-<!-- global petal canvas -->
-<div class="petal-canvas" id="petalCanvas"></div>
+<div id="petalCanvas"></div>
 
 <div class="nav-dots" id="navDots">
   <div class="nav-dot active" onclick="goTo(0)"></div>
@@ -137,158 +158,239 @@
   <div class="nav-dot" onclick="goTo(4)"></div>
 </div>
 
-<!-- PAGE 1 -->
-<div class="page active" id="page1">
-  <div class="page-bg"></div>
-  <!-- flower corners -->
-  <svg class="flower-corner" style="top:-10px;left:-10px;width:180px;" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="30" cy="30" r="18" fill="#f0c4d8"/><circle cx="60" cy="20" r="12" fill="#deb0d0"/><circle cx="20" cy="60" r="12" fill="#deb0d0"/><circle cx="50" cy="50" r="8" fill="#c084b0"/><circle cx="80" cy="35" r="8" fill="#f5d0e0"/><circle cx="35" cy="80" r="8" fill="#f5d0e0"/><circle cx="100" cy="30" r="6" fill="#e8b8cc"/><circle cx="30" cy="100" r="6" fill="#e8b8cc"/><line x1="30" y1="30" x2="80" y2="80" stroke="#e0b8cc" stroke-width="0.5"/><circle cx="65" cy="70" r="5" fill="#f0c4d8"/><circle cx="90" cy="55" r="5" fill="#deb0d0"/><circle cx="55" cy="90" r="5" fill="#deb0d0"/>
+<!-- ═══════════════════════════════════
+     PAGE 0 — ENVELOPE COVER
+═══════════════════════════════════ -->
+<div class="page active" id="page0">
+  <div class="dot-bg" style="color:#c084b0;"></div>
+
+  <!-- floral corners page0 -->
+  <svg style="position:absolute;top:-8px;left:-8px;width:200px;opacity:.22;pointer-events:none;" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="22" fill="#f0b8d0"/><circle cx="70" cy="22" r="14" fill="#dea0c4"/><circle cx="22" cy="70" r="14" fill="#dea0c4"/><circle cx="58" cy="58" r="9" fill="#c080b0"/><circle cx="95" cy="38" r="9" fill="#f5c8dc"/><circle cx="38" cy="95" r="9" fill="#f5c8dc"/><circle cx="115" cy="28" r="7" fill="#eab0c8"/><circle cx="28" cy="115" r="7" fill="#eab0c8"/><circle cx="72" cy="82" r="6" fill="#f0b8d0"/><circle cx="82" cy="72" r="6" fill="#dea0c4"/>
   </svg>
-  <svg class="flower-corner" style="top:-10px;right:-10px;width:180px;transform:scaleX(-1);" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="30" cy="30" r="18" fill="#f0c4d8"/><circle cx="60" cy="20" r="12" fill="#deb0d0"/><circle cx="20" cy="60" r="12" fill="#deb0d0"/><circle cx="50" cy="50" r="8" fill="#c084b0"/><circle cx="80" cy="35" r="8" fill="#f5d0e0"/><circle cx="35" cy="80" r="8" fill="#f5d0e0"/><circle cx="100" cy="30" r="6" fill="#e8b8cc"/><circle cx="30" cy="100" r="6" fill="#e8b8cc"/>
+  <svg style="position:absolute;top:-8px;right:-8px;width:200px;opacity:.22;pointer-events:none;transform:scaleX(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="22" fill="#e0c0f0"/><circle cx="70" cy="22" r="14" fill="#d0a8e4"/><circle cx="22" cy="70" r="14" fill="#d0a8e4"/><circle cx="58" cy="58" r="9" fill="#b890c8"/><circle cx="95" cy="38" r="9" fill="#ecd0f8"/><circle cx="38" cy="95" r="9" fill="#ecd0f8"/>
   </svg>
-  <svg class="flower-corner" style="bottom:-10px;left:-10px;width:180px;transform:scaleY(-1);" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="30" cy="30" r="18" fill="#e8d0f0"/><circle cx="60" cy="20" r="12" fill="#d4b8e8"/><circle cx="20" cy="60" r="12" fill="#d4b8e8"/><circle cx="50" cy="50" r="8" fill="#b890c8"/><circle cx="80" cy="35" r="8" fill="#ead0f8"/><circle cx="35" cy="80" r="8" fill="#ead0f8"/>
+  <svg style="position:absolute;bottom:-8px;left:-8px;width:180px;opacity:.18;pointer-events:none;transform:scaleY(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="20" fill="#f0b8d0"/><circle cx="68" cy="20" r="13" fill="#dea0c4"/><circle cx="20" cy="68" r="13" fill="#dea0c4"/><circle cx="55" cy="55" r="8" fill="#c080b0"/>
   </svg>
-  <svg class="flower-corner" style="bottom:-10px;right:-10px;width:180px;transform:scale(-1);" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="30" cy="30" r="18" fill="#e8d0f0"/><circle cx="60" cy="20" r="12" fill="#d4b8e8"/><circle cx="20" cy="60" r="12" fill="#d4b8e8"/><circle cx="50" cy="50" r="8" fill="#b890c8"/><circle cx="80" cy="35" r="8" fill="#ead0f8"/><circle cx="35" cy="80" r="8" fill="#ead0f8"/>
+  <svg style="position:absolute;bottom:-8px;right:-8px;width:180px;opacity:.18;pointer-events:none;transform:scale(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="20" fill="#e0c0f0"/><circle cx="68" cy="20" r="13" fill="#d0a8e4"/><circle cx="20" cy="68" r="13" fill="#d0a8e4"/>
   </svg>
-  <div class="page-inner" style="text-align:center;">
-    <p class="cover-tag">Sebuah perayaan untukmu</p>
-    <h1 class="cover-title">Selamat<br><span>Ulang Tahun,</span><br><span class="name-highlight" style="font-size:clamp(36px,6vw,58px);">Ara Nisa</span></h1>
-    <p class="cover-date">25 Mei &nbsp;·&nbsp; Hari yang paling berharga</p>
-    <div class="cover-divider"><div class="cover-divider-line"></div><span class="cover-heart">♥</span><div class="cover-divider-line r"></div></div>
-    <button class="btn-start" onclick="goTo(1)">Buka pesan untukmu &rarr;</button>
-    <p class="hearts-deco"><span style="color:#c04060;opacity:0.85;">♥</span> <span style="color:#c090c0;opacity:0.5;font-size:14px;">♥</span> <span style="color:#c04060;opacity:0.6;font-size:10px;">♥</span></p>
+
+  <div class="envelope-wrap">
+    <p class="env-hint">✦ &nbsp; Tekan segel untuk membuka &nbsp; ✦</p>
+    <div class="envelope" id="envelope" onclick="openEnvelope()">
+      <div class="env-body">
+        <div class="env-flap"></div>
+        <div class="env-left"></div>
+        <div class="env-right"></div>
+        <div class="env-bottom"></div>
+        <!-- letter sheet peeking -->
+        <div class="letter-sheet peeking" id="letterSheet">
+          <p style="font-family:'Dancing Script',cursive;font-size:18px;color:#c04060;margin-bottom:6px;">Untuk,</p>
+          <p style="font-family:'Playfair Display',serif;font-size:22px;color:#7c3d7c;font-style:italic;">Ara Nisa</p>
+          <p style="font-size:11px;color:#b088b0;margin-top:10px;letter-spacing:1px;">dengan sepenuh hati ♥</p>
+        </div>
+        <!-- seal on top of flap -->
+        <div class="seal" id="seal">
+          <div class="seal-ring"></div>
+          <div class="seal-inner">A<br><span style="font-size:13px;">♥</span><br>N</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#c090c0;margin-top:20px;letter-spacing:1px;text-align:center;">25 Mei · Hari yang paling berharga</p>
   </div>
 </div>
 
-<!-- PAGE 2 -->
-<div class="page" id="page2">
-  <div class="page-bg"></div>
-  <svg class="flower-corner" style="top:-10px;right:-10px;width:160px;transform:scaleX(-1);opacity:0.12;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="18" fill="#e8b8cc"/><circle cx="60" cy="20" r="12" fill="#d4a0c0"/><circle cx="20" cy="60" r="12" fill="#d4a0c0"/><circle cx="50" cy="50" r="8" fill="#c084b0"/><circle cx="80" cy="35" r="8" fill="#f0c8dc"/><circle cx="35" cy="80" r="8" fill="#f0c8dc"/></svg>
-  <svg class="flower-corner" style="bottom:-10px;left:-10px;width:160px;transform:scaleY(-1);opacity:0.12;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="18" fill="#d4b8e8"/><circle cx="60" cy="20" r="12" fill="#c4a0d8"/><circle cx="20" cy="60" r="12" fill="#c4a0d8"/><circle cx="50" cy="50" r="8" fill="#b088c0"/></svg>
+<!-- ═══════════════════════════════════
+     PAGE 1 — OUR STORY
+═══════════════════════════════════ -->
+<div class="page" id="page1">
+  <div class="dot-bg"></div>
+  <svg style="position:absolute;top:-8px;right:-8px;width:190px;opacity:.14;pointer-events:none;transform:scaleX(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="22" fill="#f0b8cc"/><circle cx="70" cy="22" r="14" fill="#e0a0bc"/><circle cx="22" cy="70" r="14" fill="#e0a0bc"/><circle cx="58" cy="58" r="9" fill="#c080a8"/><circle cx="95" cy="38" r="9" fill="#f8c8d8"/><circle cx="38" cy="95" r="9" fill="#f8c8d8"/>
+  </svg>
+  <svg style="position:absolute;bottom:-8px;left:-8px;width:170px;opacity:.14;pointer-events:none;transform:scaleY(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="20" fill="#e0c0f0"/><circle cx="68" cy="20" r="13" fill="#d0a8e4"/><circle cx="20" cy="68" r="13" fill="#d0a8e4"/><circle cx="55" cy="55" r="8" fill="#b890c8"/>
+  </svg>
+
   <div class="page-inner">
-    <p class="section-label">Perjalanan kita</p>
-    <h2 class="section-title">Kisah yang<br>dimulai dari satu momen</h2>
+    <!-- photo: landscape top, foto berdua -->
+    <div class="photo-slot" style="width:100%;height:200px;border-radius:20px;margin-bottom:32px;" onclick="triggerUpload(this)">
+      <input type="file" accept="image/*" onchange="loadPhoto(event,this.parentElement)">
+      <div class="photo-icon">🌸</div>
+      <div class="photo-label">Tap untuk sisipkan foto berdua</div>
+    </div>
+
+    <p class="sec-tag">Perjalanan kita</p>
+    <h2 class="sec-title">Kisah yang dimulai<br>dari satu momen</h2>
     <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <p class="timeline-date">Sebelum segalanya</p>
-        <h3 class="timeline-title">Yang tidak pernah direncanakan</h3>
-        <p class="timeline-text">Tidak ada yang benar-benar tahu ini akan terjadi — bukan aku, bukan kamu. Masa-masa itu terasa canggung, penuh tanda tanya, kadang berat untuk dijangkau. Tapi ada sesuatu yang terus mengalir, pelan-pelan, tanpa aba-aba. Sampai akhirnya kami tidak perlu lagi bertanya ke mana arahnya.</p>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <p class="t-date">Sebelum segalanya</p>
+        <h3 class="t-title">Yang tidak pernah direncanakan</h3>
+        <p class="body-text">Tidak ada yang benar-benar tahu ini akan terjadi — bukan aku, bukan kamu. Masa-masa itu terasa canggung, penuh tanda tanya, kadang berat untuk dijangkau. Tapi ada sesuatu yang terus mengalir, pelan-pelan, tanpa aba-aba.</p>
       </div>
-      <div class="timeline-item red-dot">
-        <div class="timeline-dot"></div>
-        <p class="timeline-date">30 Oktober 2025</p>
-        <h3 class="timeline-title">Hari itu, segalanya berubah</h3>
-        <p class="timeline-text">Ada hari-hari yang kita tandai dalam hati — bukan karena ada yang istimewa di luarnya, tapi karena ada sesuatu yang diam-diam dimulai dari dalam. 30 Oktober adalah salah satunya.</p>
+      <div class="t-item rd">
+        <div class="t-dot"></div>
+        <p class="t-date">30 Oktober 2025</p>
+        <h3 class="t-title">Hari itu, segalanya berubah</h3>
+        <p class="body-text">Ada hari-hari yang kita tandai dalam hati — bukan karena ada yang istimewa di luarnya, tapi karena ada sesuatu yang diam-diam dimulai dari dalam. 30 Oktober adalah salah satunya.</p>
       </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <p class="timeline-date">Hari-hari setelahnya</p>
-        <h3 class="timeline-title">Belajar mengenalmu</h3>
-        <p class="timeline-text">Setiap percakapan membuka satu pintu baru. Setiap cerita yang kamu bagi adalah bagian darimu yang perlahan aku pahami — dan setiap kali, aku selalu ingin tahu lebih.</p>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <p class="t-date">Hari-hari setelahnya</p>
+        <h3 class="t-title">Belajar mengenalmu</h3>
+        <p class="body-text">Setiap percakapan membuka satu pintu baru. Setiap cerita yang kamu bagi adalah bagian darimu yang perlahan aku pahami.</p>
       </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <p class="timeline-date">Sekarang</p>
-        <h3 class="timeline-title">Dan di sini kita berdiri</h3>
-        <p class="timeline-text">Belum lama, tapi sudah cukup dalam. Aku tidak tahu persis ke mana semua ini mengarah — tapi aku tahu bahwa bersamamu, <span class="name-highlight">Ara Nisa</span>, setiap langkah terasa seperti tempat yang ingin kutuju.</p>
+      <div class="t-item">
+        <div class="t-dot"></div>
+        <p class="t-date">Sekarang</p>
+        <h3 class="t-title">Dan di sini kita berdiri</h3>
+        <p class="body-text">Belum lama, tapi sudah cukup dalam. Bersamamu, <span class="name-hl">Ara Nisa</span>, setiap langkah terasa seperti tempat yang ingin kutuju.</p>
       </div>
     </div>
-    <button class="btn-next" onclick="goTo(2)">Lanjutkan &rarr;</button>
+    <button class="btn-p" onclick="goTo(2)">Lanjutkan &rarr;</button>
   </div>
 </div>
 
-<!-- PAGE 3 -->
-<div class="page" id="page3">
-  <div class="page-bg"></div>
-  <svg class="flower-corner" style="top:-10px;left:-10px;width:150px;opacity:0.13;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="16" fill="#e0c0f0"/><circle cx="58" cy="18" r="10" fill="#d0a8e4"/><circle cx="18" cy="58" r="10" fill="#d0a8e4"/><circle cx="48" cy="48" r="7" fill="#c090d0"/><circle cx="78" cy="33" r="7" fill="#eed0f8"/><circle cx="33" cy="78" r="7" fill="#eed0f8"/></svg>
-  <svg class="flower-corner" style="bottom:-10px;right:-10px;width:150px;transform:scale(-1);opacity:0.13;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="16" fill="#f0c4d8"/><circle cx="58" cy="18" r="10" fill="#e0aac8"/><circle cx="18" cy="58" r="10" fill="#e0aac8"/><circle cx="48" cy="48" r="7" fill="#c080b0"/></svg>
+<!-- ═══════════════════════════════════
+     PAGE 2 — 25 THINGS
+═══════════════════════════════════ -->
+<div class="page" id="page2">
+  <div class="dot-bg"></div>
+  <svg style="position:absolute;top:-8px;left:-8px;width:185px;opacity:.15;pointer-events:none;" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="22" fill="#e0b8f0"/><circle cx="70" cy="22" r="14" fill="#d0a0e4"/><circle cx="22" cy="70" r="14" fill="#d0a0e4"/><circle cx="58" cy="58" r="9" fill="#b880c8"/><circle cx="95" cy="38" r="9" fill="#ecc8f8"/><circle cx="38" cy="95" r="9" fill="#ecc8f8"/>
+  </svg>
+  <svg style="position:absolute;bottom:-8px;right:-8px;width:170px;opacity:.15;pointer-events:none;transform:scale(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="20" fill="#f0b8cc"/><circle cx="68" cy="20" r="13" fill="#e0a0bc"/><circle cx="20" cy="68" r="13" fill="#e0a0bc"/><circle cx="55" cy="55" r="8" fill="#c080a8"/>
+  </svg>
+
   <div class="page-inner">
-    <p class="section-label">25 hal · untuk hari yang ke-25</p>
-    <h2 class="section-title">Hal-hal tentangmu<br>yang selalu aku ingat</h2>
+    <!-- 2 foto side by side -->
+    <div style="display:flex;gap:14px;margin-bottom:28px;">
+      <div class="photo-slot" style="flex:1;height:160px;" onclick="triggerUpload(this)">
+        <input type="file" accept="image/*" onchange="loadPhoto(event,this.parentElement)">
+        <div class="photo-icon">🌷</div>
+        <div class="photo-label">Foto dia</div>
+      </div>
+      <div class="photo-slot" style="flex:1;height:160px;" onclick="triggerUpload(this)">
+        <input type="file" accept="image/*" onchange="loadPhoto(event,this.parentElement)">
+        <div class="photo-icon">🌸</div>
+        <div class="photo-label">Foto berdua</div>
+      </div>
+    </div>
+
+    <p class="sec-tag">25 hal · untuk hari yang ke-25</p>
+    <h2 class="sec-title">Hal-hal tentangmu<br>yang selalu aku ingat</h2>
     <div class="things-grid" id="thingsGrid"></div>
-    <button class="btn-next" onclick="goTo(3)" style="margin-top:40px;">Lihat sesuatu untukmu &rarr;</button><br>
-    <span class="edit-note" onclick="sendPrompt('Tolong bantu saya edit daftar 25 hal di website ulang tahun ini')">✏ Edit daftar ini dengan ceritamu sendiri ↗</span>
+    <button class="btn-p" onclick="goTo(3)" style="margin-top:32px;">Lihat sesuatu untukmu &rarr;</button>
   </div>
 </div>
 
-<!-- PAGE 4 -->
+<!-- ═══════════════════════════════════
+     PAGE 3 — MESSAGES (dark)
+═══════════════════════════════════ -->
+<div class="page" id="page3">
+  <div class="dot-bg"></div>
+  <svg style="position:absolute;top:-8px;left:-8px;width:170px;opacity:.09;pointer-events:none;" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="20" fill="#b880c8"/><circle cx="68" cy="20" r="13" fill="#9860b0"/><circle cx="20" cy="68" r="13" fill="#9860b0"/><circle cx="55" cy="55" r="8" fill="#7840a0"/>
+  </svg>
+  <svg style="position:absolute;bottom:-8px;right:-8px;width:170px;opacity:.09;pointer-events:none;transform:scale(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="20" fill="#c04060"/><circle cx="68" cy="20" r="13" fill="#a03050"/><circle cx="20" cy="68" r="13" fill="#a03050"/>
+  </svg>
+
+  <div class="page-inner" style="text-align:center;">
+    <!-- foto portrait dia, sisi atas tengah -->
+    <div style="display:flex;justify-content:center;margin-bottom:28px;">
+      <div class="photo-slot" style="width:130px;height:160px;border-radius:50% 50% 40% 40%/60% 60% 40% 40%;border-color:#6a3a6a;" onclick="triggerUpload(this)">
+        <input type="file" accept="image/*" onchange="loadPhoto(event,this.parentElement)">
+        <div class="photo-icon" style="color:#8a5a9a;">🌺</div>
+        <div class="photo-label" style="color:#8a5a9a;">Foto dia</div>
+      </div>
+    </div>
+
+    <p class="sec-tag" style="color:#8a5a8a;">Karena kamu layak dirayakan</p>
+    <h2 style="font-family:'Playfair Display',serif;font-size:clamp(26px,4.5vw,38px);color:#f0d0f0;line-height:1.2;margin-bottom:8px;">Pesan dari hatiku</h2>
+
+    <div class="sf">
+      <div class="sl active">
+        <div class="si"><span style="color:#c04060;">♥</span> <span style="color:#9a5a98;font-size:20px;">♥</span> <span style="color:#c04060;font-size:15px;">♥</span></div>
+        <p class="st">"Di antara semua hal yang terjadi tahun ini, bertemu kamu adalah yang paling tidak kusangka — dan yang paling bersyukur kusambut."</p>
+        <p class="ss">— untukmu, dengan sepenuh hati</p>
+      </div>
+      <div class="sl">
+        <div class="si"><span style="color:#9a5a98;font-size:15px;">♥</span> <span style="color:#c04060;">♥</span> <span style="color:#9a5a98;font-size:15px;">♥</span></div>
+        <p class="st">"Kamu ceria, penuh semangat, dan punya mimpi yang besar. Tapi aku juga tahu — di balik itu semua, ada pikiran yang kadang tidak mau diam. Dan aku ingin kamu tahu: aku ada, di saat yang tenang maupun yang ramai."</p>
+        <p class="ss">— termasuk aku</p>
+      </div>
+      <div class="sl">
+        <div class="si"><span style="color:#c04060;font-size:15px;">♥</span> <span style="color:#c04060;">♥</span> <span style="color:#c04060;font-size:15px;">♥</span></div>
+        <p class="st">"Semoga tahun ini membawa hal-hal yang selama ini kamu impikan. Dan semoga di antara semua itu, ada aku — menemanimu."</p>
+        <p class="ss">— selamat ulang tahun, <span style="font-style:normal;color:#f0a0b8;">Ara Nisa</span></p>
+      </div>
+      <div class="sl">
+        <div class="si"><span style="color:#9a5a98;font-size:20px;">♥</span> <span style="color:#c04060;font-size:13px;">♥</span> <span style="color:#9a5a98;">♥</span></div>
+        <p class="st">"Terima kasih sudah hadir. Terima kasih sudah mau dikenal. Terima kasih sudah menjadi kamu."</p>
+        <p class="ss">— dengan cinta yang tulus</p>
+      </div>
+    </div>
+    <div class="sc">
+      <button class="sb" onclick="changeSlide(-1)">&#8592;</button>
+      <div class="sd-wrap">
+        <div class="sd active" onclick="goSlide(0)"></div>
+        <div class="sd" onclick="goSlide(1)"></div>
+        <div class="sd" onclick="goSlide(2)"></div>
+        <div class="sd" onclick="goSlide(3)"></div>
+      </div>
+      <button class="sb" onclick="changeSlide(1)">&#8594;</button>
+    </div>
+    <button class="btn-d" onclick="goTo(4)">Dan ada satu lagi untukmu &rarr;</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PAGE 4 — GIFT & PRAYER
+═══════════════════════════════════ -->
 <div class="page" id="page4">
-  <div class="page-bg"></div>
-  <svg class="flower-corner" style="top:-10px;left:-10px;width:140px;opacity:0.08;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="16" fill="#b880c0"/><circle cx="58" cy="18" r="10" fill="#9a60a8"/><circle cx="18" cy="58" r="10" fill="#9a60a8"/><circle cx="48" cy="48" r="7" fill="#7a4088"/></svg>
-  <svg class="flower-corner" style="bottom:-10px;right:-10px;width:140px;transform:scale(-1);opacity:0.08;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="16" fill="#c04060"/><circle cx="58" cy="18" r="10" fill="#a03050"/><circle cx="18" cy="58" r="10" fill="#a03050"/></svg>
-  <div class="page-inner">
-    <p class="dark-label">Karena kamu layak dirayakan</p>
-    <h2 class="dark-title">Pesan dari hatiku</h2>
-    <div class="slideshow-frame">
-      <div class="slide active">
-        <div class="slide-icon"><span style="color:#c04060;">♥</span> <span style="color:#9a5a98;font-size:22px;">♥</span> <span style="color:#c04060;font-size:16px;">♥</span></div>
-        <p class="slide-text">"Di antara semua hal yang terjadi tahun ini, bertemu kamu adalah yang paling tidak kusangka — dan yang paling bersyukur kusambut."</p>
-        <p class="slide-sub">— untukmu, dengan sepenuh hati</p>
+  <div class="dot-bg"></div>
+  <svg style="position:absolute;top:-8px;left:-8px;width:200px;opacity:.2;pointer-events:none;" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="22" fill="#f0b8d0"/><circle cx="70" cy="22" r="14" fill="#dea0c4"/><circle cx="22" cy="70" r="14" fill="#dea0c4"/><circle cx="58" cy="58" r="9" fill="#c080b0"/><circle cx="95" cy="38" r="9" fill="#f5c8dc"/><circle cx="38" cy="95" r="9" fill="#f5c8dc"/><circle cx="115" cy="28" r="7" fill="#eab0c8"/><circle cx="28" cy="115" r="7" fill="#eab0c8"/>
+  </svg>
+  <svg style="position:absolute;top:-8px;right:-8px;width:200px;opacity:.2;pointer-events:none;transform:scaleX(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="22" fill="#e0c0f0"/><circle cx="70" cy="22" r="14" fill="#d0a8e4"/><circle cx="22" cy="70" r="14" fill="#d0a8e4"/><circle cx="58" cy="58" r="9" fill="#b890c8"/><circle cx="95" cy="38" r="9" fill="#ead0f8"/><circle cx="38" cy="95" r="9" fill="#ead0f8"/>
+  </svg>
+  <svg style="position:absolute;bottom:-8px;left:-8px;width:170px;opacity:.16;pointer-events:none;transform:scaleY(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="20" fill="#f0b8d0"/><circle cx="68" cy="20" r="13" fill="#e0a0bc"/><circle cx="20" cy="68" r="13" fill="#e0a0bc"/><circle cx="55" cy="55" r="8" fill="#c080b0"/>
+  </svg>
+  <svg style="position:absolute;bottom:-8px;right:-8px;width:170px;opacity:.16;pointer-events:none;transform:scale(-1);" viewBox="0 0 200 200" fill="none">
+    <circle cx="35" cy="35" r="20" fill="#e0c0f0"/><circle cx="68" cy="20" r="13" fill="#d0a8e4"/><circle cx="20" cy="68" r="13" fill="#d0a8e4"/>
+  </svg>
+
+  <div class="page-inner" style="text-align:center;">
+    <!-- foto berdua di bawah judul -->
+    <p class="sec-tag">Dan akhirnya...</p>
+    <h2 class="sec-title" style="margin-bottom:20px;">Ada yang sudah<br>menunggumu, <span class="name-hl" style="font-size:clamp(18px,3vw,30px);">Ara Nisa</span></h2>
+
+    <div style="display:flex;gap:14px;justify-content:center;margin-bottom:28px;">
+      <div class="photo-slot" style="width:140px;height:170px;border-radius:80px 80px 20px 20px;" onclick="triggerUpload(this)">
+        <input type="file" accept="image/*" onchange="loadPhoto(event,this.parentElement)">
+        <div class="photo-icon">🌸</div>
+        <div class="photo-label">Foto dia</div>
       </div>
-      <div class="slide">
-        <div class="slide-icon"><span style="color:#9a5a98;font-size:16px;">♥</span> <span style="color:#c04060;">♥</span> <span style="color:#9a5a98;font-size:16px;">♥</span></div>
-        <p class="slide-text">"Kamu ceria, penuh semangat, dan punya mimpi yang besar. Tapi aku juga tahu — di balik itu semua, ada pikiran-pikiran yang kadang tidak mau diam. Dan aku ingin kamu tahu: aku ada, di saat yang tenang maupun yang ramai."</p>
-        <p class="slide-sub">— termasuk aku</p>
-      </div>
-      <div class="slide">
-        <div class="slide-icon"><span style="color:#c04060;font-size:16px;">♥</span> <span style="color:#c04060;">♥</span> <span style="color:#c04060;font-size:16px;">♥</span></div>
-        <p class="slide-text">"Semoga tahun ini membawa hal-hal yang selama ini kamu impikan. Dan semoga di antara semua itu, ada aku — menemanimu."</p>
-        <p class="slide-sub">— selamat ulang tahun, <span style="font-style:normal;color:#f0a0b8;">Ara Nisa</span></p>
-      </div>
-      <div class="slide">
-        <div class="slide-icon"><span style="color:#9a5a98;font-size:22px;">♥</span> <span style="color:#c04060;font-size:14px;">♥</span> <span style="color:#9a5a98;">♥</span></div>
-        <p class="slide-text">"Terima kasih sudah hadir. Terima kasih sudah mau dikenal. Terima kasih sudah menjadi kamu."</p>
-        <p class="slide-sub">— dengan cinta yang tulus</p>
+      <div class="photo-slot" style="width:140px;height:170px;border-radius:80px 80px 20px 20px;" onclick="triggerUpload(this)">
+        <input type="file" accept="image/*" onchange="loadPhoto(event,this.parentElement)">
+        <div class="photo-icon">💕</div>
+        <div class="photo-label">Foto berdua</div>
       </div>
     </div>
-    <div class="slide-controls">
-      <button class="slide-btn" onclick="changeSlide(-1)">&#8592;</button>
-      <div class="slide-dots">
-        <div class="slide-dot active" onclick="goSlide(0)"></div>
-        <div class="slide-dot" onclick="goSlide(1)"></div>
-        <div class="slide-dot" onclick="goSlide(2)"></div>
-        <div class="slide-dot" onclick="goSlide(3)"></div>
-      </div>
-      <button class="slide-btn" onclick="changeSlide(1)">&#8594;</button>
-    </div><br>
-    <button class="btn-next-dark" onclick="goTo(4)">Dan ada satu lagi untukmu &rarr;</button><br>
-    <span class="edit-note" style="border-color:#6a3a6a;color:#8a5a8a;background:rgba(100,40,100,0.08);" onclick="sendPrompt('Tolong bantu saya edit pesan slideshow di website ulang tahun ini')">✏ Edit pesan slideshow ini ↗</span>
-  </div>
-</div>
 
-<!-- PAGE 5 -->
-<div class="page" id="page5">
-  <div class="page-bg"></div>
-  <svg class="flower-corner" style="top:-10px;left:-10px;width:180px;opacity:0.2;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="18" fill="#f0c4d8"/><circle cx="60" cy="20" r="12" fill="#deb0d0"/><circle cx="20" cy="60" r="12" fill="#deb0d0"/><circle cx="50" cy="50" r="8" fill="#c084b0"/><circle cx="80" cy="35" r="8" fill="#f5d0e0"/><circle cx="35" cy="80" r="8" fill="#f5d0e0"/><circle cx="100" cy="30" r="6" fill="#e8b8cc"/><circle cx="30" cy="100" r="6" fill="#e8b8cc"/></svg>
-  <svg class="flower-corner" style="top:-10px;right:-10px;width:180px;transform:scaleX(-1);opacity:0.2;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="18" fill="#e8d0f0"/><circle cx="60" cy="20" r="12" fill="#d4b8e8"/><circle cx="20" cy="60" r="12" fill="#d4b8e8"/><circle cx="50" cy="50" r="8" fill="#b890c8"/><circle cx="80" cy="35" r="8" fill="#ead0f8"/><circle cx="35" cy="80" r="8" fill="#ead0f8"/></svg>
-  <svg class="flower-corner" style="bottom:-10px;left:-10px;width:160px;transform:scaleY(-1);opacity:0.15;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="16" fill="#f0c4d8"/><circle cx="58" cy="18" r="10" fill="#e0aac8"/><circle cx="18" cy="58" r="10" fill="#e0aac8"/><circle cx="48" cy="48" r="7" fill="#c084b0"/></svg>
-  <svg class="flower-corner" style="bottom:-10px;right:-10px;width:160px;transform:scale(-1);opacity:0.15;" viewBox="0 0 180 180" fill="none"><circle cx="30" cy="30" r="16" fill="#e0c0f0"/><circle cx="58" cy="18" r="10" fill="#d0a8e4"/><circle cx="18" cy="58" r="10" fill="#d0a8e4"/><circle cx="48" cy="48" r="7" fill="#c090d0"/></svg>
-
-  <div class="page-inner">
-    <p class="section-label">Dan akhirnya...</p>
-
-    <div class="gift-box-wrap">
-      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-        <rect x="15" y="50" width="90" height="60" rx="8" fill="#e8c4e0" stroke="#c090b8" stroke-width="1"/>
-        <rect x="15" y="40" width="90" height="18" rx="4" fill="#d0a8cc" stroke="#b888c0" stroke-width="1"/>
-        <rect x="52" y="40" width="16" height="70" rx="4" fill="#c084b8"/>
-        <ellipse cx="60" cy="40" rx="20" ry="10" fill="none" stroke="#c04060" stroke-width="1.5"/>
-        <ellipse cx="60" cy="40" rx="20" ry="10" fill="none" stroke="#c04060" stroke-width="1.5" transform="rotate(60 60 40)"/>
-        <ellipse cx="60" cy="40" rx="20" ry="10" fill="none" stroke="#c04060" stroke-width="1.5" transform="rotate(120 60 40)"/>
-        <text x="60" y="88" text-anchor="middle" font-size="22" fill="#c04060">♥</text>
-      </svg>
-    </div>
-
-    <h2 class="gift-msg">Ada yang sudah<br>menunggumu, <span class="name-highlight" style="font-size:clamp(18px,3vw,28px);">Ara Nisa</span></h2>
-    <p class="gift-intro">Aku memilihnya bukan karena terpaksa —<br>tapi karena aku mendengar, memperhatikan, dan peduli.</p>
+    <p class="body-text" style="max-width:460px;margin:0 auto 28px;text-align:center;">Aku memilihnya bukan karena terpaksa —<br>tapi karena aku mendengar, memperhatikan, dan peduli.</p>
 
     <div class="prayer-card">
-      <p class="prayer-label">♥ &nbsp; Doa & harapanku untukmu &nbsp; ♥</p>
-      <p class="prayer-text">
+      <p class="pl">♥ &nbsp; Doa & harapanku untukmu &nbsp; ♥</p>
+      <p class="pt">
         Semoga di usiamu yang ke-25 ini,<br>
         kamu <strong>selalu sehat</strong> — lahir maupun batin.<br><br>
         Semoga setiap mimpi besar yang kamu simpan<br>
@@ -301,112 +403,133 @@
         membawamu lebih dekat<br>
         pada versi dirimu <strong>yang paling bahagia</strong>.
       </p>
-      <div class="prayer-divider"></div>
-      <p class="prayer-sign">Selamat ulang tahun, Ara Nisa &nbsp;♥</p>
+      <div class="pdiv"></div>
+      <p class="psign">Selamat ulang tahun, Ara Nisa &nbsp;♥</p>
     </div>
 
-    <p class="closing-hearts" style="margin-top:32px;">
+    <p style="font-size:20px;margin-top:28px;letter-spacing:10px;text-align:center;">
       <span style="color:#c04060;">♥</span>
       <span style="color:#c090c0;font-size:14px;">♥</span>
       <span style="color:#c04060;font-size:10px;">♥</span>
     </p>
-    <span class="edit-note" onclick="sendPrompt('Tolong bantu saya edit doa dan harapan di halaman terakhir website ulang tahun ini agar lebih personal')">✏ Edit doa ini dengan kata-katamu sendiri ↗</span>
+    <span class="edit-note" onclick="sendPrompt('Tolong bantu edit doa di halaman terakhir website ulang tahun ini agar lebih personal')">✏ Edit doa ini dengan kata-katamu sendiri ↗</span>
   </div>
 </div>
 
 <script>
-  let currentPage = 0;
-  const pages = document.querySelectorAll('.page');
-  const navDots = document.querySelectorAll('.nav-dot');
-  function goTo(idx){
-    pages[currentPage].classList.remove('active');
-    navDots[currentPage].classList.remove('active');
-    currentPage=idx;
-    pages[currentPage].classList.add('active');
-    navDots[currentPage].classList.add('active');
-    window.scrollTo(0,0);
-  }
+/* ── navigation ── */
+let cur=0;
+const pages=document.querySelectorAll('.page');
+const ndots=document.querySelectorAll('.nav-dot');
+function goTo(i){
+  pages[cur].classList.remove('active');
+  ndots[cur].classList.remove('active');
+  cur=i;
+  pages[cur].classList.add('active');
+  ndots[cur].classList.add('active');
+  window.scrollTo(0,0);
+}
 
-  const things=[
-    {n:1,t:"Cara matamu berbicara sebelum kata-katamu sempat keluar"},
-    {n:2,t:"Senyummu yang muncul tiba-tiba, bahkan di tengah hal yang biasa saja"},
-    {n:3,t:"Semangatmu yang tidak pernah setengah-setengah untuk hal yang kamu cintai"},
-    {n:4,t:"Matamu yang menangkap detail kecil yang orang lain tidak sempat lihat"},
-    {n:5,t:"Kejujuranmu — bahkan di saat jujur itu tidak mudah dan tidak nyaman"},
-    {n:6,t:"Kehangatan yang kamu bawa, tanpa kamu sadari, di setiap percakapan"},
-    {n:7,t:"Cara matamu bersinar saat bercerita tentang hal-hal yang kamu suka"},
-    {n:8,t:"Suaramu saat kamu bernyanyi — ada ketulusan di sana yang tidak bisa dipalsukan"},
-    {n:9,t:"Cara kamu mendengarkan — bukan hanya diam, tapi benar-benar hadir"},
-    {n:10,t:"Betapa bisa diandalkannya kamu — bukan karena terpaksa, tapi karena memang begitulah caramu"},
-    {n:11,t:"Kamu tahu cara membuat hal yang biasa terasa sedikit lebih bermakna"},
-    {n:12,t:"Kamu punya teman di mana-mana — dan itu bukan kebetulan, itu cerminan dari siapa dirimu"},
-    {n:13,t:"Orang-orang menyukaimu hampir seketika — karena kepribadianmu bukan sesuatu yang bisa dibuat-buat"},
-    {n:14,t:"Hatimu yang lembut, bahkan untuk hal-hal kecil yang orang lain anggap biasa"},
-    {n:15,t:"Cara kamu mencintai sesuatu — total, sungguh-sungguh, tidak pernah tanggung"},
-    {n:16,t:"Kamu tidak pernah membuatku merasa kecil, bahkan di saat aku tidak yakin dengan diriku sendiri"},
-    {n:17,t:"Kamu punya mimpi besar — dan aku suka melihat betapa seriusnya kamu mengejarnya"},
-    {n:18,t:"Kelembutanmu yang ada di balik ceriamu — dua sisi yang membuat kamu utuh"},
-    {n:19,t:"Dunia terasa sedikit lebih ringan hanya karena kamu ada di dalamnya"},
-    {n:20,t:"Selera dan standarmu yang tinggi — kamu tahu persis apa yang baik, dan tidak pernah mau kompromi untuk yang kurang dari itu"},
-    {n:21,t:"Loyalitasmu kepada orang-orang yang kamu sayang — tulus, konsisten, tidak perlu diminta"},
-    {n:22,t:"Rasa sayangmu yang terasa bahkan dari hal-hal kecil yang kamu lakukan"},
-    {n:23,t:"Kamu tidak perlu banyak kata untuk membuat seseorang merasa dimengerti"},
-    {n:24,t:"Pintarnya kamu — bukan hanya soal pengetahuan, tapi cara kamu membaca situasi dan memahami orang"},
-    {n:25,t:"Dan yang terakhir: kamu adalah kamu. Dan itu sudah lebih dari cukup."}
-  ];
-  const grid=document.getElementById('thingsGrid');
-  things.forEach((item,i)=>{
-    const card=document.createElement('div');
-    card.className='thing-card'+((i+1)%5===0?' accent-red':'');
-    card.innerHTML=`<span class="thing-num">${item.n}</span><p class="thing-text">${item.t}</p>`;
-    grid.appendChild(card);
-  });
+/* ── envelope animation ── */
+let opened=false;
+function openEnvelope(){
+  if(opened)return;
+  opened=true;
+  const env=document.getElementById('envelope');
+  const seal=document.getElementById('seal');
+  // seal "crack" effect
+  seal.style.transition='transform .3s ease,opacity .4s ease .2s';
+  seal.style.transform='scale(1.2) rotate(15deg)';
+  setTimeout(()=>{
+    seal.style.opacity='0';
+    env.classList.add('open');
+    // after flap opens, transition to page1
+    setTimeout(()=>{
+      // white flash overlay
+      const flash=document.createElement('div');
+      flash.style.cssText='position:fixed;inset:0;background:white;z-index:999;opacity:0;transition:opacity .35s ease;';
+      document.body.appendChild(flash);
+      setTimeout(()=>flash.style.opacity='1',50);
+      setTimeout(()=>{goTo(1);flash.style.opacity='0';},500);
+      setTimeout(()=>flash.remove(),900);
+    },900);
+  },300);
+}
 
-  let currentSlide=0;
-  const slides=document.querySelectorAll('.slide');
-  const dots=document.querySelectorAll('.slide-dot');
-  function goSlide(idx){slides[currentSlide].classList.remove('active');dots[currentSlide].classList.remove('active');currentSlide=idx;slides[currentSlide].classList.add('active');dots[currentSlide].classList.add('active');}
-  function changeSlide(dir){goSlide((currentSlide+dir+slides.length)%slides.length);}
+/* ── photo upload ── */
+function triggerUpload(el){el.querySelector('input[type=file]').click();}
+function loadPhoto(e,slot){
+  const file=e.target.files[0];
+  if(!file)return;
+  const url=URL.createObjectURL(file);
+  let img=slot.querySelector('img');
+  if(!img){img=document.createElement('img');slot.appendChild(img);}
+  img.src=url;
+  slot.querySelector('.photo-icon').style.display='none';
+  slot.querySelector('.photo-label').style.display='none';
+}
 
-  // global petals — flower shapes
-  const canvas=document.getElementById('petalCanvas');
-  const flowerColors=['#f9c0dc','#f0b8e8','#f5c8d0','#e0c0f0','#f8d0e8','#f0c0cc','#fad0d8','#e8c0f0'];
-  function makePetal(){
-    const p=document.createElement('div');
-    p.style.cssText=`position:absolute;pointer-events:none;`;
-    const size=(8+Math.random()*12)+'px';
-    const color=flowerColors[Math.floor(Math.random()*flowerColors.length)];
-    const type=Math.floor(Math.random()*3);
-    if(type===0){
-      // heart shape via border-radius trick
-      p.style.width=size;p.style.height=size;
-      p.style.background=color;
-      p.style.borderRadius='50% 0 50% 0';
-      p.style.transform='rotate(45deg)';
-    } else if(type===1){
-      // circle petal
-      p.style.width=size;p.style.height=size;
-      p.style.background=color;
-      p.style.borderRadius='50% 30% 50% 30%';
-    } else {
-      // elongated petal
-      const w=(6+Math.random()*8)+'px';
-      const h=(10+Math.random()*14)+'px';
-      p.style.width=w;p.style.height=h;
-      p.style.background=color;
-      p.style.borderRadius='50% 50% 50% 50% / 30% 30% 70% 70%';
-    }
-    p.style.left=Math.random()*100+'%';
-    p.style.top='-20px';
-    p.style.opacity='0';
-    p.style.animation=`floatPetal ${7+Math.random()*9}s linear forwards`;
-    canvas.appendChild(p);
-    setTimeout(()=>p.remove(),(16+Math.random()*9)*1000);
-  }
-  // spawn petals continuously
-  setInterval(makePetal,400);
-  // initial burst
-  for(let i=0;i<12;i++) setTimeout(makePetal,i*200);
+/* ── 25 things ── */
+const things=[
+  {n:1,t:"Cara matamu berbicara sebelum kata-katamu sempat keluar"},
+  {n:2,t:"Senyummu yang muncul tiba-tiba, bahkan di tengah hal yang biasa saja"},
+  {n:3,t:"Semangatmu yang tidak pernah setengah-setengah untuk hal yang kamu cintai"},
+  {n:4,t:"Matamu yang menangkap detail kecil yang orang lain tidak sempat lihat"},
+  {n:5,t:"Kejujuranmu — bahkan di saat jujur itu tidak mudah dan tidak nyaman"},
+  {n:6,t:"Kehangatan yang kamu bawa, tanpa kamu sadari, di setiap percakapan"},
+  {n:7,t:"Cara matamu bersinar saat bercerita tentang hal-hal yang kamu suka"},
+  {n:8,t:"Suaramu saat kamu bernyanyi — ada ketulusan di sana yang tidak bisa dipalsukan"},
+  {n:9,t:"Cara kamu mendengarkan — bukan hanya diam, tapi benar-benar hadir"},
+  {n:10,t:"Betapa bisa diandalkannya kamu — bukan karena terpaksa, tapi karena memang begitulah caramu"},
+  {n:11,t:"Kamu tahu cara membuat hal yang biasa terasa sedikit lebih bermakna"},
+  {n:12,t:"Kamu punya teman di mana-mana — dan itu bukan kebetulan, itu cerminan dari siapa dirimu"},
+  {n:13,t:"Orang-orang menyukaimu hampir seketika — karena kepribadianmu bukan sesuatu yang bisa dibuat-buat"},
+  {n:14,t:"Hatimu yang lembut, bahkan untuk hal-hal kecil yang orang lain anggap biasa"},
+  {n:15,t:"Cara kamu mencintai sesuatu — total, sungguh-sungguh, tidak pernah tanggung"},
+  {n:16,t:"Kamu tidak pernah membuatku merasa kecil, bahkan di saat aku tidak yakin dengan diriku sendiri"},
+  {n:17,t:"Kamu punya mimpi besar — dan aku suka melihat betapa seriusnya kamu mengejarnya"},
+  {n:18,t:"Kelembutanmu yang ada di balik ceriamu — dua sisi yang membuat kamu utuh"},
+  {n:19,t:"Dunia terasa sedikit lebih ringan hanya karena kamu ada di dalamnya"},
+  {n:20,t:"Selera dan standarmu yang tinggi — kamu tahu persis apa yang baik, dan tidak pernah mau kompromi"},
+  {n:21,t:"Loyalitasmu kepada orang-orang yang kamu sayang — tulus, konsisten, tidak perlu diminta"},
+  {n:22,t:"Rasa sayangmu yang terasa bahkan dari hal-hal kecil yang kamu lakukan"},
+  {n:23,t:"Kamu tidak perlu banyak kata untuk membuat seseorang merasa dimengerti"},
+  {n:24,t:"Pintarnya kamu — bukan hanya soal pengetahuan, tapi cara kamu membaca situasi dan memahami orang"},
+  {n:25,t:"Dan yang terakhir: kamu adalah kamu. Dan itu sudah lebih dari cukup."}
+];
+const grid=document.getElementById('thingsGrid');
+things.forEach((item,i)=>{
+  const c=document.createElement('div');
+  c.className='tc'+((i+1)%5===0?' ar':'');
+  c.innerHTML=`<span class="tn">${item.n}</span><p class="tt">${item.t}</p>`;
+  grid.appendChild(c);
+});
+
+/* ── slideshow ── */
+let csl=0;
+const sls=document.querySelectorAll('.sl');
+const sds=document.querySelectorAll('.sd');
+function goSlide(i){sls[csl].classList.remove('active');sds[csl].classList.remove('active');csl=i;sls[csl].classList.add('active');sds[csl].classList.add('active');}
+function changeSlide(d){goSlide((csl+d+sls.length)%sls.length);}
+
+/* ── petals ── */
+const pc=document.getElementById('petalCanvas');
+const pcolors=['#f9c0dc','#f0b8e8','#f5c8d0','#e0c0f0','#f8d0e8','#f0c0cc','#fad0d8','#e8c0f0','#fce8f0'];
+function mkPetal(){
+  const p=document.createElement('div');
+  const sz=(7+Math.random()*13)+'px';
+  const c=pcolors[Math.floor(Math.random()*pcolors.length)];
+  const t=Math.floor(Math.random()*3);
+  p.style.cssText=`position:absolute;pointer-events:none;left:${Math.random()*100}%;top:-20px;opacity:0;`;
+  if(t===0){p.style.width=sz;p.style.height=sz;p.style.background=c;p.style.borderRadius='50% 0 50% 0';}
+  else if(t===1){p.style.width=sz;p.style.height=sz;p.style.background=c;p.style.borderRadius='50% 30% 50% 30%';}
+  else{p.style.width=(5+Math.random()*7)+'px';p.style.height=(9+Math.random()*13)+'px';p.style.background=c;p.style.borderRadius='50% 50% 50% 50% / 30% 30% 70% 70%';}
+  p.style.animation=`floatP ${7+Math.random()*9}s linear forwards`;
+  pc.appendChild(p);
+  setTimeout(()=>p.remove(),(16+Math.random()*9)*1000);
+}
+setInterval(mkPetal,450);
+for(let i=0;i<10;i++)setTimeout(mkPetal,i*180);
 </script>
 </body>
 </html>
